@@ -21,12 +21,12 @@ import java.util.Date;
 import java.util.Optional;
 
 @SpringBootApplication
-public class AccessingDataJpaApplication {
+public class JpaApplication {
 
-    private static final Logger log = LoggerFactory.getLogger(AccessingDataJpaApplication.class);
+    private static final Logger log = LoggerFactory.getLogger(JpaApplication.class);
 
     public static void main(String[] args) {
-        SpringApplication.run(AccessingDataJpaApplication.class);
+        SpringApplication.run(JpaApplication.class);
     }
 
     private static final ApiUtils apiUtils = new ApiUtils();
