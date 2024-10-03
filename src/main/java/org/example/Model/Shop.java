@@ -8,14 +8,12 @@ import java.util.Set;
 
 @Entity
 @NoArgsConstructor
-@Table(name="SHOP")
+@Table(name="Shop")
 public class Shop {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Long id;
+    private String id;
 
-    private String shopId;
 
     @Column(columnDefinition = "TEXT")
     private String name;
@@ -26,27 +24,18 @@ public class Shop {
     @OneToMany(mappedBy="shop")
     private Set<Category> categories;
 
-    public Shop(Long id, String shopId, String name, String description, Set<Category> categories) {
+    public Shop(String id, String name, String description, Set<Category> categories) {
         this.id = id;
-        this.shopId = shopId;
         this.name = name;
         this.description = description;
         this.categories = categories;
     }
 
-    public String getShopId() {
-        return shopId;
-    }
-
-    public void setShopId(String shopId) {
-        this.shopId = shopId;
-    }
-
-    public Long getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 

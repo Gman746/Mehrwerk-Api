@@ -7,6 +7,7 @@ import java.util.Date;
 
 @Entity
 @NoArgsConstructor
+@Table(name="Token")
 public class ApiToken {
 
     @Id

@@ -15,7 +15,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.Map;
 
 @Service
 public class ApiUtils {
@@ -40,6 +42,21 @@ public class ApiUtils {
         final ApiToken apiToken = new ApiToken(null, (String) jsonTokenMap.get("access_token"), StringUtils.capitalize((String) jsonTokenMap.get("token_type")), expireDate.getTime());
         tokenRepository.save(apiToken);
         return apiToken;
+    }
+
+    public ResponseBody getShopsAsJson(ApiToken apiToken) throws IOException {
+        OkHttpClient client = new OkHttpClient().newBuilder().build();
+
+        Request request = new Request.Builder()
+                .url(SHOP_URL)
+                .get()
+                .addHeader("X-API-KEY", X_API_KEY)
+                .addHeader("Authorization", apiToken.getType() + " " + apiToken.getContent())
+                .build();
+        Response response = client.newCall(request).execute();
+
+
+        return response.body();
     }
 
     private ResponseBody defaultPostCall(String apiUrl, String xApiKey, RequestBody requestBody) throws IOException {
@@ -72,44 +89,6 @@ public class ApiUtils {
 
         return response.body();
     }
-
-    public void generateShops(ApiToken apiToken, ShopRepository shopRepository, CategoryRepository categoryRepository) throws IOException {
-
-        final JSONObject jsonObject = new JSONObject(defaultGetCall(SHOP_URL, X_API_KEY, apiToken).string());
-
-        JSONArray itemsArray = jsonObject.getJSONArray("items");
-
-        for (Object singleItem : itemsArray) {
-
-            if (singleItem instanceof JSONObject) {
-                final JSONObject singleJsonItem = (JSONObject) singleItem;
-
-                final String shopId = singleJsonItem.getString("id");
-                final String shopDescription = singleJsonItem.getString("description");
-                final String shopName = singleJsonItem.getString("name");
-                final Set<Category> categorieCollection = new HashSet<>();
-                final Shop singleShop = new Shop(null,shopId, shopName, shopDescription, null);
-                shopRepository.save(singleShop);
-
-                JSONArray categoriesArray = singleJsonItem.getJSONArray("categories");
-                for (Object singleCategory : categoriesArray) {
-                    if (singleCategory instanceof JSONObject) {
-                        final JSONObject singleJsonCategory = (JSONObject) singleCategory;
-                        final String categoryId = singleJsonCategory.getString("id");
-                        final String CategoryName = singleJsonCategory.getString("name");
-                        final Category category = new Category(categoryId,CategoryName,singleShop);
-                        categoryRepository.save(category);
-//                        categorieCollection.add(category);
-                    }
-                }
-
-            }
-        }
-
-
-        System.out.println("test");
-    }
-
 
     private RequestBody createAuthBody() {
         return new MultipartBody.Builder()
