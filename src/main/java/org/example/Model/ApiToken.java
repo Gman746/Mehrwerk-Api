@@ -1,13 +1,15 @@
 package org.example.Model;
 
 import jakarta.persistence.*;
+import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 @Entity
 @NoArgsConstructor
-@Table(name="Token")
+@Table(name = "Token")
+@Data
 public class ApiToken {
 
     @Id
@@ -28,35 +30,4 @@ public class ApiToken {
         this.expiryDate = expiryDate;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getContent() {
-        return content;
-    }
-
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public Date getExpiryDate() {
-        return expiryDate;
-    }
-
-    public void setExpiryDate(Date expiryDate) {
-        this.expiryDate = expiryDate;
-    }
 }

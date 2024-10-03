@@ -35,12 +35,12 @@ public class AccessingDataJpaApplication {
     @Bean
     public CommandLineRunner demo(TokenRepository tokenRepository, ShopRepository shopRepository, CategoryRepository categoryRepository) {
         return (args) -> {
-            final Optional<ApiToken> tokenFromDb = tokenRepository.findById(1L);
+            final Optional<ApiToken> tokenFromDb =  tokenRepository.findById(12345L); //TODO: Add Method for getting Valid Tokens
             final Date currentDate = new Date();
 
 
-           apiToken = (tokenFromDb.isPresent() && currentDate.before(tokenFromDb.get().getExpiryDate())) ? tokenFromDb.get() : apiUtils.generateAuthenticationToken(tokenRepository);
-           generateShops(apiToken,shopRepository,categoryRepository);
+            apiToken = (tokenFromDb.isPresent() && currentDate.before(tokenFromDb.get().getExpiryDate())) ? tokenFromDb.get() : apiUtils.generateAuthenticationToken(tokenRepository);
+            generateShops(apiToken, shopRepository, categoryRepository);
 
         };
     }
@@ -72,7 +72,7 @@ public class AccessingDataJpaApplication {
         final String shopName = jsonShop.getString("name");
         final Shop singleShop = new Shop(shopId, shopName, shopDescription, null);
 
-        shopRepository.save(singleShop);
+        log.info("Saving Shop: " + shopRepository.save(singleShop).getId());
         return singleShop;
     }
 
@@ -80,7 +80,8 @@ public class AccessingDataJpaApplication {
         final String categoryId = jsonCategory.getString("id");
         final String CategoryName = jsonCategory.getString("name");
         final Category category = new Category(categoryId, CategoryName, shop);
-        categoryRepository.save(category);
+
+        log.info("Saving Category: " + categoryRepository.save(category).getId());
     }
 
 }
