@@ -1,6 +1,7 @@
 package org.example;
 
 import org.example.Model.ApiToken;
+import org.example.Repo.CategoryRepository;
 import org.example.Repo.ShopRepository;
 import org.example.Repo.TokenRepository;
 import org.example.Utils.ApiUtils;
@@ -27,14 +28,14 @@ public class AccessingDataJpaApplication {
     private ApiToken apiToken = null;
 
     @Bean
-    public CommandLineRunner demo(TokenRepository tokenRepository, ShopRepository shopRepository) {
+    public CommandLineRunner demo(TokenRepository tokenRepository, ShopRepository shopRepository, CategoryRepository categoryRepository) {
         return (args) -> {
             final Optional<ApiToken> tokenFromDb = tokenRepository.findById(1L);
             final Date currentDate = new Date();
 
 
            apiToken = (tokenFromDb.isPresent() && currentDate.before(tokenFromDb.get().getExpiryDate())) ? tokenFromDb.get() : apiUtils.generateAuthenticationToken(tokenRepository);
-           apiUtils.generateShops(apiToken,shopRepository);
+           apiUtils.generateShops(apiToken,shopRepository,categoryRepository);
         };
     }
 

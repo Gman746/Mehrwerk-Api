@@ -6,8 +6,10 @@ import okhttp3.*;
 import org.example.Model.ApiToken;
 import org.example.Model.Category;
 import org.example.Model.Shop;
+import org.example.Repo.CategoryRepository;
 import org.example.Repo.ShopRepository;
 import org.example.Repo.TokenRepository;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
@@ -71,24 +73,41 @@ public class ApiUtils {
         return response.body();
     }
 
-    public void generateShops(ApiToken apiToken, ShopRepository shopRepository) throws IOException {
+    public void generateShops(ApiToken apiToken, ShopRepository shopRepository, CategoryRepository categoryRepository) throws IOException {
 
-        ObjectMapper mapper = new ObjectMapper();
-        final Map<String, Object> generalJsonMap = mapper.readValue(defaultGetCall(SHOP_URL, X_API_KEY, apiToken).string(), new TypeReference<>() {
-        });
-        ArrayList itemList = (ArrayList) generalJsonMap.get("items");
+        final JSONObject jsonObject = new JSONObject(defaultGetCall(SHOP_URL, X_API_KEY, apiToken).string());
 
-        final Map<Object,Object> singleItemMap = null;
-        itemList.forEach((key, value) -> {singleItemMap.put(key,value)});
+        JSONArray itemsArray = jsonObject.getJSONArray("items");
 
-//        final Long id = jsonItems.getLong("id");
-//        final String description = jsonItems.getString("description");
-//        final String name = jsonItems.getString("name");
-//        final Collection< Category > categories
-//        final Shop singleShop = new Shop(id,description,name,null);
-//        shopRepository.save(singleShop);
+        for (Object singleItem : itemsArray) {
+
+            if (singleItem instanceof JSONObject) {
+                final JSONObject singleJsonItem = (JSONObject) singleItem;
+
+                final String shopId = singleJsonItem.getString("id");
+                final String shopDescription = singleJsonItem.getString("description");
+                final String shopName = singleJsonItem.getString("name");
+                final Set<Category> categorieCollection = new HashSet<>();
+                final Shop singleShop = new Shop(null,shopId, shopName, shopDescription, null);
+                shopRepository.save(singleShop);
+
+                JSONArray categoriesArray = singleJsonItem.getJSONArray("categories");
+                for (Object singleCategory : categoriesArray) {
+                    if (singleCategory instanceof JSONObject) {
+                        final JSONObject singleJsonCategory = (JSONObject) singleCategory;
+                        final String categoryId = singleJsonCategory.getString("id");
+                        final String CategoryName = singleJsonCategory.getString("name");
+                        final Category category = new Category(categoryId,CategoryName,singleShop);
+                        categoryRepository.save(category);
+//                        categorieCollection.add(category);
+                    }
+                }
+
+            }
+        }
+
+
         System.out.println("test");
-
     }
 
 

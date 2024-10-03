@@ -1,18 +1,19 @@
 package org.example.Model;
 
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.NoArgsConstructor;
 
 import java.util.Date;
 
 @Entity
+@NoArgsConstructor
 public class ApiToken {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Long id;
 
-    @Column(columnDefinition="TEXT")
+    @Column(columnDefinition = "TEXT")
     private String content;
 
     private String type;
